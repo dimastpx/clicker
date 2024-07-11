@@ -32,8 +32,8 @@ class App:
         self.window = tk.Tk()
         self.window.geometry("500x500")
 
-        image = ImageTk.PhotoImage(Image.open("skins/red1.jpg"))
-        self.clicker = tk.Button(self.window, image=image, command=self.click)
+        self.image = ImageTk.PhotoImage(Image.open("skins/red1.jpg"))
+        self.clicker = tk.Button(self.window, image=self.image, command=self.click)
         self.clicker.place(relx=0.5, rely=0.5, anchor="center")
 
         self.counter = ttk.Label(self.window, text=str(self.count))
@@ -97,8 +97,9 @@ class App:
                 else:
                     showerror("Не хватает", "Недостаточно коинов")
     def set_skin(self, name):
-        image = ImageTk.PhotoImage(Image.open(self.all_skins[name]["path"]))
-        self.clicker.config(image=image)
+        self.image = ImageTk.PhotoImage(Image.open(self.all_skins[name]["path"]))
+        self.clicker.config(image=self.image)
+
         # Не работают картинки
 
 
