@@ -7,6 +7,7 @@ from tkinter.messagebox import askyesno, showerror
 
 class App:
     def __init__(self):
+        self.window_skins = None
         self.count = 0
         self.skins = ["Краснохвост"]
         self.oneclick_bonus = 1
@@ -14,9 +15,14 @@ class App:
 
         self.all_skins = {"Краснохвост": {"target": "Даётся сразу",
                                           "path": "skins/red1.jpg"},
-                          "Краснохвост c ножиком": {"target": "1000 коинов",
-                                                    "price": 1000,
-                                                    "path": "skins/red2.jpg"}}
+                          "Краснохвост c ножиком": {"target": "80 коинов",
+                                                    "price": 80,
+                                                    "path": "skins/red2.jpg"},
+                          "Милый Краснохвост": {"target": "120 коинов",
+                                                "price": 120,
+                                                "path": "skins/red3.jpg"},
+                          "Милая Сонушка": {"target": "Необходимо купить первых трёх Краснохвостов",
+                                            "path": "skins/son1.jpg"}}
         self.skin = "Краснохвост"
 
         with open("save.json") as file:
@@ -72,6 +78,12 @@ class App:
         self.count += self.second_bonus
 
     def skins_open(self):
+        try:
+            self.window_skins.destroy()
+        except AttributeError:
+            pass
+        except tk.TclError:
+            pass
         self.window_skins = tk.Tk()
         for skin in self.all_skins:
             frame = ttk.Frame(self.window_skins)
@@ -83,19 +95,32 @@ class App:
                 ttk.Button(frame, text="Выбрать", command=lambda x=skin: self.set_skin(x)).grid(row=0, column=4)
             else:
                 if "price" in self.all_skins[skin]:
-                    ttk.Button(frame, text="Купить", command=lambda x=skin: self.get_skin(x)).grid(row=0, column=4)
+                    price = self.all_skins[skin]["price"]
+                    ttk.Button(frame, text="Купить",
+                               command=lambda x=skin: self.get_skin(x, price)).grid(row=0, column=4)
+                else:
+                    ttk.Button(frame, text="Получить",
+                               command=lambda x=skin: self.get_skin(x)).grid(row=0, column=4)
             frame.pack()
 
         self.window_skins.mainloop()
-    def get_skin(self, name):
-        match name:
-            case "Краснохвост c ножиком":
-                if self.count >= 1000:
-                    self.count -= 1000
-                    self.skins.append("Краснохвост c ножиком")
-                    self.counter.config(text=self.count)
-                else:
-                    showerror("Не хватает", "Недостаточно коинов")
+
+    def get_skin(self, name, price=None):
+        if price:
+            if self.count >= price:
+                self.count -= price
+                self.skins.append(name)
+                self.counter.config(text=self.count)
+                self.skins_open()
+            else:
+                showerror("Не хватает", "Недостаточно коинов")
+        else:
+            match name:
+                case "Милая Сонушка":
+                    if "Краснохвост c ножиком" in self.skins and "Милый Краснохвост" in self.skins:
+                        self.skins.append(name)
+                        self.skins_open()
+
     def set_skin(self, name):
         self.image = ImageTk.PhotoImage(Image.open(self.all_skins[name]["path"]))
         self.clicker.config(image=self.image)
