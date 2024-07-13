@@ -21,7 +21,7 @@ class App:
                           "Милый Краснохвост": {"target": "120 коинов",
                                                 "price": 120,
                                                 "path": "skins/red3.jpg"},
-                          "Милая Сонушка": {"target": "Необходимо купить первых трёх Краснохвостов",
+                          "Милая Сонушка": {"target": "Необходимо получить первых трёх Краснохвостов",
                                             "path": "skins/son1.jpg"}}
         self.skin = "Краснохвост"
 
@@ -97,7 +97,7 @@ class App:
                 if "price" in self.all_skins[skin]:
                     price = self.all_skins[skin]["price"]
                     ttk.Button(frame, text="Купить",
-                               command=lambda x=skin: self.get_skin(x, price)).grid(row=0, column=4)
+                               command=lambda x=skin, y=price: self.get_skin(x, y)).grid(row=0, column=4)
                 else:
                     ttk.Button(frame, text="Получить",
                                command=lambda x=skin: self.get_skin(x)).grid(row=0, column=4)
@@ -107,6 +107,7 @@ class App:
 
     def get_skin(self, name, price=None):
         if price:
+            print(price, self.count)
             if self.count >= price:
                 self.count -= price
                 self.skins.append(name)
@@ -120,6 +121,8 @@ class App:
                     if "Краснохвост c ножиком" in self.skins and "Милый Краснохвост" in self.skins:
                         self.skins.append(name)
                         self.skins_open()
+                    else:
+                        showerror("Не собрано", "Вы не собрали все картинки")
 
     def set_skin(self, name):
         self.image = ImageTk.PhotoImage(Image.open(self.all_skins[name]["path"]))
