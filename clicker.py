@@ -4,7 +4,7 @@ from PIL import ImageTk, Image
 from json import dump, load
 from tkinter.messagebox import askyesno, showerror
 
-
+# Сделать бонус за клик/в секунду
 class App:
     def __init__(self):
         self.window_skins = None
@@ -12,6 +12,10 @@ class App:
         self.skins = ["Краснохвост"]
         self.oneclick_bonus = 1
         self.second_bonus = 0
+        self.boosts_click = {"кусь": 15,
+                             "цап": 20,
+                             "мур": 50,
+                             "чмок": 200}
 
         self.all_skins = {"Краснохвост": {"target": "Даётся сразу",
                                           "path": "skins/red1.jpg"},
@@ -32,6 +36,7 @@ class App:
                 self.skins = data["skins"]
                 self.oneclick_bonus = data["oneclick"]
                 self.second_bonus = data["second"]
+                self.boosts_click = data["all_boost"]
             except KeyError:
                 pass
 
@@ -50,6 +55,10 @@ class App:
         self.menu.add_command(label="Сброс сохранения", command=self.reset)
         self.menu.add_command(label="Картинка", command=self.skins_open)
 
+        self.oneclick_menu = tk.Menu(self.menu, tearoff=0)
+        self.menu.add_cascade(label="Бонус за клик", menu=self.oneclick_menu)
+        self.init_oneclick_buttons()
+
         self.window.mainloop()
 
         self.save()
@@ -63,7 +72,8 @@ class App:
             data = {"count": self.count,
                     "skins": self.skins,
                     "oneclick": self.oneclick_bonus,
-                    "second": self.second_bonus}
+                    "second": self.second_bonus,
+                    "all_boost": self.boosts_click}
             dump(data, file)
 
     def reset(self):
@@ -73,6 +83,7 @@ class App:
                 self.count = 0
                 self.skins = ["Краснохвост"]
                 self.counter.config(text=self.count)
+                self.oneclick_bonus = 1
 
     def second(self):
         self.count += self.second_bonus
@@ -107,7 +118,6 @@ class App:
 
     def get_skin(self, name, price=None):
         if price:
-            print(price, self.count)
             if self.count >= price:
                 self.count -= price
                 self.skins.append(name)
@@ -128,7 +138,37 @@ class App:
         self.image = ImageTk.PhotoImage(Image.open(self.all_skins[name]["path"]))
         self.clicker.config(image=self.image)
 
-        # Не работают картинки
+    def add_oneclick(self, name):
+        price = self.boosts_click[name]
+        boost = None
+        if self.count >= price:
+            self.count -= price
+            match name:
+                case "кусь":
+                    boost = 1
+                case "цап":
+                    boost = 3
+                case "мур":
+                    boost = 10
+                case "чмок":
+                    boost = 25
+            self.oneclick_bonus += boost
+            self.counter.config(text=self.count)
+            self.boosts_click[name] *= 2
+            self.oneclick_menu.delete(0, "end")
+            self.init_oneclick_buttons()
+        else:
+            showerror("Не хватает", "Недостаточно коинов")
+
+    def init_oneclick_buttons(self):
+        self.oneclick_menu.add_command(label=f"Кусь(+1) - {self.boosts_click["кусь"]}",
+                                       command=lambda: self.add_oneclick("кусь"))
+        self.oneclick_menu.add_command(label=f"Цап(+3) - {self.boosts_click["цап"]}",
+                                       command=lambda: self.add_oneclick("цап"))
+        self.oneclick_menu.add_command(label=f"Муррчащий ускоритель(+10) - {self.boosts_click["мур"]}",
+                                       command=lambda: self.add_oneclick("мур"))
+        self.oneclick_menu.add_command(label=f"Поцелуй от Сонушки(+25) - {self.boosts_click["чмок"]}",
+                                       command=lambda: self.add_oneclick("чмок"))
 
 
 App()
