@@ -61,8 +61,20 @@ class App:
         self.clicker = tk.Button(self.window, image=self.image, command=self.click)
         self.clicker.place(relx=0.5, rely=0.5, anchor="center")
         # Счётчик
-        self.counter = ttk.Label(self.window, text=str(self.count))
+        self.counter = ttk.Label(self.window, text=str(self.count), font="Arial 15")
         self.counter.pack()
+
+        self.counter_frame = ttk.Frame(self.window)
+        self.counter_frame.pack()
+
+        self.counter_click = ttk.Label(self.counter_frame, text=str(self.oneclick_bonus), font="Arial 12")
+        self.counter_click.grid(row=0, column=0)
+
+        ttk.Label(self.counter_frame, text="     |     ").grid(row=0, column=1)
+
+        self.counter_second = ttk.Label(self.counter_frame, text=str(self.second_bonus), font="Arial 12")
+        self.counter_second.grid(row=0, column=2)
+
         # Верхнее меню (кнопки)
         self.menu = tk.Menu()
         self.window.config(menu=self.menu)
@@ -84,7 +96,7 @@ class App:
 
     def click(self):
         self.count += self.oneclick_bonus
-        self.counter.config(text=self.count)
+        self.counter_update()
 
     def save(self):
         with open("save.json", "w") as file:
@@ -102,7 +114,7 @@ class App:
                 dump({}, file)
                 self.count = 0
                 self.skins = ["Краснохвост"]
-                self.counter.config(text=self.count)
+                self.counter_update()
                 self.oneclick_bonus = 1
                 self.second_bonus = 0
                 self.boosts_click = self.boosts_click_constant
@@ -146,7 +158,7 @@ class App:
             if self.count >= price:
                 self.count -= price
                 self.skins.append(name)
-                self.counter.config(text=self.count)
+                self.counter_update()
                 self.skins_open()
             else:
                 showerror("Не хватает", "Недостаточно коинов")
@@ -169,7 +181,7 @@ class App:
             self.count -= price
             boost = int(name[name.find("(") + 1: name.find(")")])
             self.oneclick_bonus += boost
-            self.counter.config(text=self.count)
+            self.counter_update()
             self.boosts_click[name] *= 2
             self.clear_menu()
             self.init_click_buttons()
@@ -182,7 +194,7 @@ class App:
             self.count -= price
             boost = int(name[name.find("(") + 1: name.find(")")])
             self.second_bonus += boost
-            self.counter.config(text=self.count)
+            self.counter_update()
             self.boosts_second[name] *= 2
             self.clear_menu()
             self.init_click_buttons()
@@ -191,7 +203,7 @@ class App:
 
     def autoclick(self):
         self.count += self.second_bonus
-        self.counter.config(text=self.count)
+        self.counter_update()
         self.window.after(1000, self.autoclick)
 
     def init_click_buttons(self):
@@ -199,13 +211,17 @@ class App:
             self.oneclick_menu.add_command(label=f"{i} - {self.boosts_click[i]}",
                                            command=lambda x=i: self.add_oneclick(x))
         for j in self.boosts_second:
-            print(j)
             self.second_menu.add_command(label=f"{j} - {self.boosts_second[j]}",
                                          command=lambda x=j: self.add_second(x))
 
     def clear_menu(self):
         self.oneclick_menu.delete(0, "end")
         self.second_menu.delete(0, "end")
+
+    def counter_update(self):
+        self.counter.config(text=f"Ваши коины: {self.count}")
+        self.counter_click.config(text=f"Коинов за клик: {self.oneclick_bonus}")
+        self.counter_second.config(text=f"Коинов в секунду: {self.second_bonus}")
 
 
 App()
