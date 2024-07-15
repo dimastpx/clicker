@@ -61,8 +61,10 @@ class App:
                 self.second_bonus = data["second"]
                 self.boosts_click = data["all_boost"]
                 self.boosts_second = data["sec_boost"]
+                self.skin = data["skin"]
             except KeyError:
                 pass
+
         # Окно
         self.window = tk.Tk()
         self.window.geometry("500x500")
@@ -70,6 +72,8 @@ class App:
         self.image = ImageTk.PhotoImage(Image.open("skins/red1.jpg"))
         self.clicker = tk.Button(self.window, image=self.image, command=self.click)
         self.clicker.place(relx=0.5, rely=0.5, anchor="center")
+
+        self.set_skin(self.skin)
         # Счётчик
         self.counter = ttk.Label(self.window, text=str(self.count), font="Arial 15")
         self.counter.pack()
@@ -98,7 +102,7 @@ class App:
         self.menu.add_cascade(label="Автоклик", menu=self.second_menu)
         self.init_click_buttons()
         # Авто клик
-        self.window.after(1000, self.autoclick)
+        self.autoclick()
 
         self.window.mainloop()
         # Сохранение после закрытия
@@ -115,7 +119,8 @@ class App:
                     "oneclick": self.oneclick_bonus,
                     "second": self.second_bonus,
                     "all_boost": self.boosts_click,
-                    "sec_boost": self.boosts_second}
+                    "sec_boost": self.boosts_second,
+                    "skin": self.skin}
             dump(data, file)
 
     def reset(self):
@@ -124,6 +129,7 @@ class App:
                 dump({}, file)
                 self.count = 0
                 self.skins = ["Краснохвост"]
+                self.set_skin("Краснохвост")
                 self.counter_update()
                 self.oneclick_bonus = 1
                 self.second_bonus = 0
@@ -195,6 +201,7 @@ class App:
                         showerror("Не хватает", "На данный момент коинов меньше 20000")
 
     def set_skin(self, name):
+        self.skin = name
         self.image = ImageTk.PhotoImage(Image.open(self.all_skins[name]["path"]))
         self.clicker.config(image=self.image)
 
@@ -231,10 +238,10 @@ class App:
 
     def init_click_buttons(self):
         for i in self.boosts_click:
-            self.oneclick_menu.add_command(label=f"{i} - {self.boosts_click[i]}",
+            self.oneclick_menu.add_command(label=f"{i} - {self.boosts_click[i]:,}",
                                            command=lambda x=i: self.add_oneclick(x))
         for j in self.boosts_second:
-            self.second_menu.add_command(label=f"{j} - {self.boosts_second[j]}",
+            self.second_menu.add_command(label=f"{j} - {self.boosts_second[j]:,}",
                                          command=lambda x=j: self.add_second(x))
 
     def clear_menu(self):
@@ -242,9 +249,9 @@ class App:
         self.second_menu.delete(0, "end")
 
     def counter_update(self):
-        self.counter.config(text=f"Ваши коины: {self.count}")
-        self.counter_click.config(text=f"Коинов за клик: {self.oneclick_bonus}")
-        self.counter_second.config(text=f"Коинов в секунду: {self.second_bonus}")
+        self.counter.config(text=f"Ваши коины: {self.count:,}")
+        self.counter_click.config(text=f"Коинов за клик: {self.oneclick_bonus:,}")
+        self.counter_second.config(text=f"Коинов в секунду: {self.second_bonus:,}")
 
 
 App()
