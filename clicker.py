@@ -38,8 +38,18 @@ class App:
                           "Милый Краснохвост": {"target": "120 коинов",
                                                 "price": 120,
                                                 "path": "skins/red3.jpg"},
-                          "Милая Сонушка": {"target": "Необходимо получить первых трёх Краснохвостов",
-                                            "path": "skins/son1.jpg"}}
+                          "Милая Сонушка": {"target": "Разблокируйте первых трёх Краснохвостов",
+                                            "path": "skins/son1.jpg"},
+                          "Весёлый Краснохвост": {"target": "1000 коинов",
+                                                  "price": 1000,
+                                                  "path": "skins/red5.png"},
+                          "Смелая Сонушка": {"target": "5000 коинов",
+                                             "price": 5000,
+                                             "path": "skins/son3.png"},
+                          "Вкусная Сонушка": {"target": "Купите поцелуйчики Сонушки",
+                                              "path": "skins/son2.jpg"},
+                          "Краснохвост, идущий к... Сонушке": {"target": "Достигните 20000 коинов",
+                                                               "path": "skins/red4.jpg"}}
         self.skin = "Краснохвост"
 
         with open("save.json") as file:
@@ -149,6 +159,7 @@ class App:
                 else:
                     ttk.Button(frame, text="Получить",
                                command=lambda x=skin: self.get_skin(x)).grid(row=0, column=4)
+            ttk.Label(self.window_skins, text="-"*100).pack()
             frame.pack()
 
         self.window_skins.mainloop()
@@ -170,6 +181,18 @@ class App:
                         self.skins_open()
                     else:
                         showerror("Не собрано", "Вы не собрали все картинки")
+                case "Вкусная Сонушка":
+                    if self.boosts_click["Поцелуйчики Сонушки(+1000)"] > 10000:
+                        self.skins.append(name)
+                        self.skins_open()
+                    else:
+                        showerror("Не куплено", "Вы не купили поцелуйчик Сонушки:(")
+                case "Краснохвост, идущий к... Сонушке":
+                    if self.count >= 20000:
+                        self.skins.append(name)
+                        self.skins_open()
+                    else:
+                        showerror("Не хватает", "На данный момент коинов меньше 20000")
 
     def set_skin(self, name):
         self.image = ImageTk.PhotoImage(Image.open(self.all_skins[name]["path"]))
