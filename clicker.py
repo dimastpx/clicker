@@ -3,6 +3,7 @@ import tkinter.ttk as ttk
 from PIL import ImageTk, Image
 from json import dump, load
 from tkinter.messagebox import askyesno, showerror
+from time import time
 
 
 # Сделать бонус за клик/в секунду
@@ -216,7 +217,7 @@ class App:
             self.clear_menu()
             self.init_click_buttons()
         else:
-            showerror("Не хватает", "Недостаточно коинов")
+            self.show_error("Недостаточно коинов")
 
     def add_second(self, name: str):
         price = self.boosts_second[name]
@@ -229,7 +230,7 @@ class App:
             self.clear_menu()
             self.init_click_buttons()
         else:
-            showerror("Не хватает", "Недостаточно коинов")
+            self.show_error("Недостаточно коинов")
 
     def autoclick(self):
         self.count += self.second_bonus
@@ -252,6 +253,13 @@ class App:
         self.counter.config(text=f"Ваши коины: {self.count:,}")
         self.counter_click.config(text=f"Коинов за клик: {self.oneclick_bonus:,}")
         self.counter_second.config(text=f"Коинов в секунду: {self.second_bonus:,}")
+
+    def show_error(self, text: str):
+        temp = ttk.Label(self.window, text=text, foreground="red", font="20")
+        temp.pack()
+        self.window.after(2000, lambda: temp.destroy())
+
+
 
 
 App()
