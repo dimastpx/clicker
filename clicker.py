@@ -1,9 +1,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from PIL import ImageTk, Image
 from json import dump, load
 from tkinter.messagebox import askyesno, showerror
-from time import time
+
+from PIL import ImageTk, Image
 
 
 # Сделать бонус за клик/в секунду
@@ -14,6 +14,7 @@ class App:
         self.skins = ["Краснохвост"]
         self.oneclick_bonus = 1
         self.second_bonus = 0
+        self.levels_constant = (100, 500, 1000, 2000, 5000, 10000, 20000, 100000)
 
         self.boosts_click_constant = {"Кусь(+1)": 15,
                                       "Цап(+3)": 20,
@@ -68,7 +69,9 @@ class App:
 
         # Окно
         self.window = tk.Tk()
-        self.window.geometry("500x500")
+        self.window.geometry("500x500+500+200")
+        self.window.title("Мяу кликер")
+        self.window.iconbitmap("icon.ico")
         # Изображение кнопки
         self.image = ImageTk.PhotoImage(Image.open("skins/red1.jpg"))
         self.clicker = tk.Button(self.window, image=self.image, command=self.click)
@@ -113,6 +116,7 @@ class App:
         self.count += self.oneclick_bonus
         self.counter_update()
 
+
     def save(self):
         with open("save.json", "w") as file:
             data = {"count": self.count,
@@ -150,6 +154,9 @@ class App:
         except tk.TclError:
             pass
         self.window_skins = tk.Tk()
+        self.window_skins.geometry("+1000+200")
+        self.window_skins.title("Выбор картинок")
+        self.window_skins.iconbitmap("icon.ico")
         for skin in self.all_skins:
             frame = ttk.Frame(self.window_skins)
             ttk.Label(frame, text=skin).grid(row=0, column=0)
@@ -258,6 +265,7 @@ class App:
         temp = ttk.Label(self.window, text=text, foreground="red", font="20")
         temp.pack()
         self.window.after(2000, lambda: temp.destroy())
+
 
 
 
