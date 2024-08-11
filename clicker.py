@@ -14,7 +14,8 @@ class App:
         self.skins = ["Краснохвост"]
         self.oneclick_bonus = 1
         self.second_bonus = 0
-        self.levels_constant = (100, 500, 1000, 2000, 5000, 10000, 20000, 100000)
+        self.levels_constant = (0, 100, 500, 1000, 2000, 5000, 10000, 20000, 100000)
+        self.level = 1
 
         self.boosts_click_constant = {"Кусь(+1)": 15,
                                       "Цап(+3)": 20,
@@ -64,6 +65,7 @@ class App:
                 self.boosts_click = data["all_boost"]
                 self.boosts_second = data["sec_boost"]
                 self.skin = data["skin"]
+                self.level = data["level"]
             except KeyError:
                 pass
 
@@ -105,6 +107,12 @@ class App:
         self.second_menu = tk.Menu(self.menu, tearoff=0)
         self.menu.add_cascade(label="Автоклик", menu=self.second_menu)
         self.init_click_buttons()
+        # Прогресс (бар)
+        self.progress_bar = ttk.Progressbar(self.window, value=float(self.level), maximum=100)
+        self.progress_bar.pack(side="bottom", fill="x")
+
+        self.level_counter = ttk.Label(text= f"Ваш уровень : {self.level}")
+        self.level_counter.pack(side="bottom")
         # Авто клик
         self.autoclick()
 
@@ -115,6 +123,8 @@ class App:
     def click(self):
         self.count += self.oneclick_bonus
         self.counter_update()
+        self.bar_update()
+
 
 
     def save(self):
@@ -125,7 +135,8 @@ class App:
                     "second": self.second_bonus,
                     "all_boost": self.boosts_click,
                     "sec_boost": self.boosts_second,
-                    "skin": self.skin}
+                    "skin": self.skin,
+                    "level": self.level}
             dump(data, file)
 
     def reset(self):
@@ -138,6 +149,7 @@ class App:
                 self.counter_update()
                 self.oneclick_bonus = 1
                 self.second_bonus = 0
+                self.level = 1
                 self.boosts_click = self.boosts_click_constant
                 self.boosts_second = self.boosts_second_constant
                 self.clear_menu()
@@ -145,6 +157,7 @@ class App:
 
     def second(self):
         self.count += self.second_bonus
+
 
     def skins_open(self):
         try:
@@ -242,6 +255,7 @@ class App:
     def autoclick(self):
         self.count += self.second_bonus
         self.counter_update()
+        self.bar_update()
         self.window.after(1000, self.autoclick)
 
     def init_click_buttons(self):
@@ -266,6 +280,20 @@ class App:
         temp.pack()
         self.window.after(2000, lambda: temp.destroy())
 
+    def bar_update(self):
+        mx = self.levels_constant[self.level]
+        if self.count >= mx:
+            # Новый уровень
+            self.level += 1
+            mx = self.levels_constant[self.level]
+
+        self.progress_bar["maximum"] = mx
+
+        self.progress_bar["value"] = self.count
+        self.progress_bar.update()
+
+        self.level_counter["text"] = f"Ваш уровень : {self.level}"
+        self.level_counter.update()
 
 
 
