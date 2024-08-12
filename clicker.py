@@ -5,6 +5,13 @@ from tkinter.messagebox import askyesno, showerror, showinfo
 
 from PIL import ImageTk, Image
 
+try:
+    open("save.json")
+except FileNotFoundError:
+    f = open("save.json", "w")
+    dump({}, f)
+    f.close()
+
 
 # Сделать бонус за клик/в секунду
 class App:
@@ -52,7 +59,10 @@ class App:
                           "Вкусная Сонушка": {"target": "Купите поцелуйчики Сонушки",
                                               "path": "skins/son2.jpg"},
                           "Краснохвост, идущий к... Сонушке": {"target": "Достигните 6 уровня",
-                                                               "path": "skins/red4.jpg"}}
+                                                               "path": "skins/red4.jpg"},
+                          "Ваксон": {"target": "10000 коинов",
+                                     "price": 10000,
+                                     "path": "skins/vak1.png"}}
         self.skin = "Краснохвост"
 
         with open("save.json") as file:
