@@ -14,7 +14,7 @@ class App:
         self.skins = ["Краснохвост"]
         self.oneclick_bonus = 1
         self.second_bonus = 0
-        self.levels_constant = (0, 100, 1000, 3000, 6000, 10000, 20000, 100000, 100000000)
+        self.levels_constant = (0, 100, 1000, 3000, 6000, 10000, 20000, 100000, 1000000)
         self.level = 1
 
         self.Boosts_click_constant = {"Кусь(+1)": 15,
