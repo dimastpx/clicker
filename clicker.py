@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from json import dump, load
-from tkinter.messagebox import askyesno, showerror
+from tkinter.messagebox import askyesno, showerror, showinfo
 
 from PIL import ImageTk, Image
 
@@ -14,10 +14,10 @@ class App:
         self.skins = ["Краснохвост"]
         self.oneclick_bonus = 1
         self.second_bonus = 0
-        self.levels_constant = (0, 100, 500, 1000, 2000, 5000, 10000, 20000, 100000)
+        self.levels_constant = (0, 100, 1000, 3000, 6000, 10000, 20000, 100000, 100000000)
         self.level = 1
 
-        self.boosts_click_constant = {"Кусь(+1)": 15,
+        self.Boosts_click_constant = {"Кусь(+1)": 15,
                                       "Цап(+3)": 20,
                                       "Мур(+10)": 50,
                                       "Чмок(+50)": 200,
@@ -25,15 +25,15 @@ class App:
                                       "Мурчание Саяны(+200)": 2000,
                                       "Сила Краснохвоста(+300)": 5000,
                                       "Поцелуйчики Сонушки(+1000)": 10000}
-        self.boosts_click = self.boosts_click_constant.copy()
+        self.boosts_click = self.Boosts_click_constant.copy()
 
-        self.boosts_second_constant = {"Сон Сонушки(+10)": 1000,
+        self.Boosts_second_constant = {"Сон Сонушки(+10)": 1000,
                                        "Храп Краснохвоста(+20)": 3000,
                                        "Рычание Саяны(+50)": 7000,
                                        "Гнев Алохвоста(+100)": 12000}
-        self.boosts_second = self.boosts_second_constant.copy()
+        self.boosts_second = self.Boosts_second_constant.copy()
 
-        self.all_skins = {"Краснохвост": {"target": "Даётся сразу",
+        self.All_skins = {"Краснохвост": {"target": "Даётся сразу",
                                           "path": "skins/red1.jpg"},
                           "Краснохвост c ножиком": {"target": "80 коинов",
                                                     "price": 80,
@@ -150,8 +150,8 @@ class App:
                 self.oneclick_bonus = 1
                 self.second_bonus = 0
                 self.level = 1
-                self.boosts_click = self.boosts_click_constant
-                self.boosts_second = self.boosts_second_constant
+                self.boosts_click = self.Boosts_click_constant
+                self.boosts_second = self.Boosts_second_constant
                 self.clear_menu()
                 self.init_click_buttons()
 
@@ -170,17 +170,17 @@ class App:
         self.window_skins.geometry("+1000+200")
         self.window_skins.title("Выбор картинок")
         self.window_skins.iconbitmap("icon.ico")
-        for skin in self.all_skins:
+        for skin in self.All_skins:
             frame = ttk.Frame(self.window_skins)
             ttk.Label(frame, text=skin).grid(row=0, column=0)
             ttk.Label(frame, text="|").grid(row=0, column=1)
-            ttk.Label(frame, text=self.all_skins[skin]["target"]).grid(row=0, column=2)
+            ttk.Label(frame, text=self.All_skins[skin]["target"]).grid(row=0, column=2)
             ttk.Label(frame, text="|").grid(row=0, column=3)
             if skin in self.skins:
                 ttk.Button(frame, text="Выбрать", command=lambda x=skin: self.set_skin(x)).grid(row=0, column=4)
             else:
-                if "price" in self.all_skins[skin]:
-                    price = self.all_skins[skin]["price"]
+                if "price" in self.All_skins[skin]:
+                    price = self.All_skins[skin]["price"]
                     ttk.Button(frame, text="Купить",
                                command=lambda x=skin, y=price: self.get_skin(x, y)).grid(row=0, column=4)
                 else:
@@ -223,7 +223,7 @@ class App:
 
     def set_skin(self, name):
         self.skin = name
-        self.image = ImageTk.PhotoImage(Image.open(self.all_skins[name]["path"]))
+        self.image = ImageTk.PhotoImage(Image.open(self.All_skins[name]["path"]))
         self.clicker.config(image=self.image)
 
     def add_oneclick(self, name: str):
@@ -281,11 +281,15 @@ class App:
         self.window.after(2000, lambda: temp.destroy())
 
     def bar_update(self):
-        mx = self.levels_constant[self.level]
-        if self.count >= mx:
-            # Новый уровень
-            self.level += 1
+        try:
             mx = self.levels_constant[self.level]
+            if self.count >= mx:
+                # Новый уровень
+                self.level += 1
+                mx = self.levels_constant[self.level]
+                showinfo("Новый уровень", f"Поздравляю, вы достигли {self.level} уровня")
+        except IndexError:
+            mx = self.levels_constant[-1]
 
         self.progress_bar["maximum"] = mx
 
